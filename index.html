@@ -4,19 +4,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z2ZVKZY47G"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Z2ZVKZY47G');
+</script>
+
+    <!-- 💰 مكان كود إعلانات جوجل (Google AdSense) 💰 -->
+    <!-- بعد قبولك في AdSense، الصق الكود هنا -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
     <!-- تحسينات SEO لمحركات بحث جوجل -->
     <meta name="description" content="دليل السياحة الشامل في إندونيسيا. اكتشف أجمل الجزر مثل بالي وجاكرتا، وتعرف على المنح الدراسية في جامعة المحمدية.">
     <meta name="keywords" content="إندونيسيا, سياحة, بالي, منح دراسية, جامعة المحمدية, سفر, جاكرتا, Wonderful Indonesia">
     <meta name="author" content="Wonderful Indonesia Team">
+    
+    <!-- تحسينات المشاركة الاجتماعية (Open Graph) -->
+    <meta property="og:title" content="السياحة في إندونيسيا 🇮🇩 - Wonderful Indonesia">
+    <meta property="og:description" content="دليل السياحة الشامل في إندونيسيا. اكتشف أجمل الجزر مثل بالي وجاكرتا، وتعرف على المنح الدراسية.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=1200">
+    <meta property="og:type" content="website">
+    
+    <!-- تحسينات تويتر (Twitter Cards) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="السياحة في إندونيسيا 🇮🇩">
+    <meta name="twitter:description" content="اكتشف سحر إندونيسيا، من بالي إلى جاكرتا. دليل سياحي شامل وفرص منح دراسية.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=1200">
+
     <title>السياحة في إندونيسيا 🇮🇩</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007bff">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏝️</text></svg>">
+    <link rel="icon" href="logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="config.js"></script>
     <script src="script.js" defer></script>
 </head>
@@ -97,15 +127,15 @@
         <ul class="gallery">
             <!-- الصور الثابتة نضعها داخل القائمة لتأخذ نفس التنسيق -->
             <li>
-                <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=500" alt="Bali">
+                <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=500" alt="Bali" loading="lazy">
                 <div class="caption">جزيرة بالي الساحرة 🌴</div>
             </li>
             <li>
-                <img src="https://images.unsplash.com/photo-1596402184320-417e7178b2cd?w=500" alt="Borobudur">
+                <img src="https://images.unsplash.com/photo-1596402184320-417e7178b2cd?w=500" alt="Borobudur" loading="lazy">
                 <div class="caption">معبد بوروبودور التاريخي 🏛️</div>
             </li>
             <li>
-                <img src="https://images.unsplash.com/photo-1516690561799-46d8f74f9dab?w=500" alt="Raja Ampat">
+                <img src="https://images.unsplash.com/photo-1516690561799-46d8f74f9dab?w=500" alt="Raja Ampat" loading="lazy">
                 <div class="caption">جزر راجا أمبات الخلابة 🌊</div>
             </li>
         </ul>
@@ -116,7 +146,7 @@
         <h2 class="section-title">📰 آخر الأخبار</h2>
         <div class="news-banner">
             <div class="news-image">
-                <img id="newsBannerImage" src="" alt="News">
+                <img id="newsBannerImage" src="" alt="News" loading="lazy">
                 <span id="newsBannerTag" class="news-tag">...</span>
             </div>
             <div class="news-content">
@@ -131,16 +161,63 @@
         <!-- قسم التعليم (المنح) -->
         <h2 class="section-title">🎓 التعليم والمنح الدراسية</h2>
         <div class="education-section">
-            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800" alt="University" class="edu-img">
+            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800" alt="University" class="edu-img" loading="lazy">
             <h3>منح جامعة المحمدية الممولة بالكامل</h3>
             <p>فرصة لا تعوض للدراسة في أفضل الجامعات الإندونيسية مع تغطية شاملة للمصاريف.</p>
+            
+            <!-- فيديو تعريفي -->
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/ضع_كود_الفيديو_الخاص_بك_هنا?autoplay=1&mute=1" title="University Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
             <a href="muhammadiyah.html" class="edu-btn">تفاصيل المنحة والتقديم 📝</a>
+        </div>
+
+        <!-- قسم شركاء النجاح (الجامعات) -->
+        <div class="logos-section" style="margin-top: 30px; padding: 20px;">
+            <h3 style="color: #555; margin-bottom: 20px;">جامعاتنا الشريكة 🤝</h3>
+            <div class="logos-slider">
+                <div class="logos-track">
+                    <div class="logo-card">
+                        <a href="#universitiesMap" class="fly-to-map" data-lat="-0.8776" data-lng="131.2563">
+                            <img src="uni_logo1.png" alt="جامعة سورونج" class="uni-logo" loading="lazy">
+                        </a>
+                        <h3>جامعة سورونج</h3>
+                    </div>
+                    <div class="logo-card">
+                        <a href="#universitiesMap" class="fly-to-map" data-lat="-7.9213" data-lng="112.5993">
+                            <img src="uni_logo2.svg" alt="جامعة مالانج" class="uni-logo" loading="lazy">
+                        </a>
+                        <h3>جامعة مالانج</h3>
+                    </div>
+                    <!-- تكرار للحركة -->
+                    <div class="logo-card">
+                        <a href="#universitiesMap" class="fly-to-map" data-lat="-0.8776" data-lng="131.2563">
+                            <img src="uni_logo1.png" alt="جامعة سورونج" class="uni-logo" loading="lazy">
+                        </a>
+                        <h3>جامعة سورونج</h3>
+                    </div>
+                    <div class="logo-card">
+                        <a href="#universitiesMap" class="fly-to-map" data-lat="-7.9213" data-lng="112.5993">
+                            <img src="uni_logo2.svg" alt="جامعة مالانج" class="uni-logo" loading="lazy">
+                        </a>
+                        <h3>جامعة مالانج</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم خريطة الجامعات -->
+        <div class="logos-section" style="margin-top: 30px;">
+            <h3 style="color: #555; margin-bottom: 20px;">مواقع الجامعات على الخريطة 📍</h3>
+            <div id="universitiesMap" style="height: 400px; width: 100%; border-radius: 15px; z-index: 1;"></div>
         </div>
         
         <div class="footer">
             <p>🌴 دليل السياحة في إندونيسيا | © 2026</p>
             <p><a href="about.html" id="aboutLink">من نحن</a> | <a href="privacy.html" id="privacyLink">سياسة الخصوصية</a></p>
             <p id="visitCountDisplay" style="font-size: 12px; color: #888; margin-top: 5px;">👀 عدد زياراتك: 0</p>
+            <p id="lastUpdateDisplay" style="font-size: 11px; color: #aaa; margin-top: 2px;"></p>
 
             <!-- قسم النشرة البريدية -->
             <div class="newsletter-form">

@@ -39,6 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('newsBannerTag').textContent = window.siteConfig.featuredNews.tag;
         document.getElementById('newsBannerTitle').textContent = window.siteConfig.featuredNews.title;
         document.getElementById('newsBannerSummary').textContent = window.siteConfig.featuredNews.summary;
+
+        // تحديث تاريخ آخر تعديل (مبدئياً بالعربية)
+        if (window.siteConfig.general.lastUpdated && document.getElementById('lastUpdateDisplay')) {
+            document.getElementById('lastUpdateDisplay').textContent = '🕒 آخر تحديث: ' + window.siteConfig.general.lastUpdated;
+        }
     }
 
     // --- دوال مساعدة (Helper Functions) ---
@@ -145,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const img = document.createElement('img');
         img.src = src;
         img.alt = 'صورة المعرض';
+        img.loading = 'lazy'; // تحسين السرعة: تحميل الصورة فقط عند الوصول إليها
 
         // إنشاء حاوية الأزرار
         const actionsDiv = document.createElement('div');
@@ -190,6 +196,21 @@ document.addEventListener('DOMContentLoaded', () => {
         twitterBtn.innerHTML = '𝕏';
         twitterBtn.title = 'مشاركة على تويتر';
 
+        const linkedinBtn = document.createElement('button');
+        linkedinBtn.className = 'linkedin-btn';
+        linkedinBtn.innerHTML = 'in';
+        linkedinBtn.title = 'مشاركة على LinkedIn';
+
+        const telegramBtn = document.createElement('button');
+        telegramBtn.className = 'telegram-btn';
+        telegramBtn.innerHTML = '✈️';
+        telegramBtn.title = 'مشاركة على Telegram';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-btn';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'نسخ رابط الصورة';
+
         const caption = document.createElement('div');
         caption.className = 'caption';
         caption.textContent = captionText;
@@ -204,6 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
         actionsDiv.appendChild(shareBtn);
         actionsDiv.appendChild(fbBtn);
         actionsDiv.appendChild(twitterBtn);
+        actionsDiv.appendChild(linkedinBtn);
+        actionsDiv.appendChild(telegramBtn);
+        actionsDiv.appendChild(copyBtn);
         actionsDiv.appendChild(downloadBtn);
         actionsDiv.appendChild(printBtn);
         actionsDiv.appendChild(deleteBtn);
@@ -636,6 +660,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // استخدام القائمة من ملف الإعدادات
         const indonesiaImages = window.siteConfig ? window.siteConfig.randomImages : [];
 
+        if (!indonesiaImages || indonesiaImages.length === 0) {
+            alert('لا توجد صور متاحة للإضافة حالياً.');
+            button.textContent = originalText;
+            button.disabled = false;
+            return;
+        }
+
         try {
             // اختيار صورة عشوائية من القائمة
             const randomDest = indonesiaImages[Math.floor(Math.random() * indonesiaImages.length)];
@@ -668,6 +699,16 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadBtn.addEventListener('click', () => {
         playSound();
         fileInput.click(); // محاكاة النقر على input المخفي
+    });
+
+    // --- كود حذف جميع الصور (إصلاح الزر المعطل) ---
+    clearBtn.addEventListener('click', () => {
+        playSound();
+        if (confirm('هل أنت متأكد من حذف جميع الصور؟ ⚠️\nلا يمكن التراجع عن هذا الإجراء.')) {
+            list.innerHTML = ''; // مسح القائمة من الصفحة
+            localStorage.removeItem('myGallery'); // مسح التخزين المحلي
+            alert('تم حذف جميع الصور بنجاح! 🗑️');
+        }
     });
 
     fileInput.addEventListener('change', (e) => {
@@ -834,6 +875,37 @@ document.addEventListener('DOMContentLoaded', () => {
             const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(caption)}&url=${encodeURIComponent(urlToShare)}`;
             window.open(twitterUrl, '_blank');
         }
+        // إذا ضغطنا على زر LinkedIn
+        else if (e.target.closest('.linkedin-btn')) {
+            const li = e.target.closest('.linkedin-btn').parentElement;
+            const img = li.querySelector('img');
+            // LinkedIn يشارك الروابط فقط
+            const urlToShare = !img.src.startsWith('data:') ? img.src : window.location.href;
+            const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(urlToShare)}`;
+            window.open(linkedinUrl, '_blank');
+        }
+        // إذا ضغطنا على زر Telegram
+        else if (e.target.closest('.telegram-btn')) {
+            const li = e.target.closest('.telegram-btn').parentElement;
+            const img = li.querySelector('img');
+            const caption = li.querySelector('.caption').textContent;
+            const urlToShare = !img.src.startsWith('data:') ? img.src : window.location.href;
+            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(urlToShare)}&text=${encodeURIComponent(caption)}`;
+            window.open(telegramUrl, '_blank');
+        }
+        // إذا ضغطنا على زر النسخ
+        else if (e.target.closest('.copy-btn')) {
+            const li = e.target.closest('.copy-btn').parentElement;
+            const img = li.querySelector('img');
+            const urlToShare = !img.src.startsWith('data:') ? img.src : window.location.href;
+            
+            navigator.clipboard.writeText(urlToShare).then(() => {
+                alert('تم نسخ رابط الصورة! 📋');
+            }).catch(() => {
+                prompt('انسخ الرابط يدوياً:', urlToShare);
+            });
+            playSound();
+        }
     });
 
     // --- كود عرض الشرائح (Slideshow) ---
@@ -941,6 +1013,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     loadNewsTicker();
+
+    // --- تحديث الأخبار والمحتوى تلقائياً كل دقيقة ---
+    setInterval(() => {
+        // التحقق مما إذا كانت الصفحة نشطة (Visible) قبل التحديث لتوفير البيانات
+        if (document.hidden) return;
+
+        const script = document.createElement('script');
+        script.src = `config.js?t=${Date.now()}`; // إضافة توقيت لتجاوز الذاكرة المؤقتة (Cache)
+        script.onload = () => {
+            if (window.siteConfig) {
+                // 1. تحديث شريط الأخبار
+                loadNewsTicker();
+
+                // 2. تحديث النصوص الرئيسية
+                if (document.getElementById('headerTitle')) document.getElementById('headerTitle').textContent = window.siteConfig.general.title;
+                if (document.getElementById('headerSubtitle')) document.getElementById('headerSubtitle').textContent = window.siteConfig.general.subtitle;
+
+                // 3. تحديث الخبر المميز (الجريدة)
+                if (document.getElementById('newsBannerImage')) document.getElementById('newsBannerImage').src = window.siteConfig.featuredNews.image;
+                if (document.getElementById('newsBannerTag')) document.getElementById('newsBannerTag').textContent = window.siteConfig.featuredNews.tag;
+                if (document.getElementById('newsBannerTitle')) document.getElementById('newsBannerTitle').textContent = window.siteConfig.featuredNews.title;
+                if (document.getElementById('newsBannerSummary')) document.getElementById('newsBannerSummary').textContent = window.siteConfig.featuredNews.summary;
+
+                // 4. تحديث تاريخ آخر تعديل
+                const currentLang = document.documentElement.lang || 'ar';
+                if (document.getElementById('lastUpdateDisplay') && window.siteConfig.general.lastUpdated && translations) {
+                    document.getElementById('lastUpdateDisplay').textContent = translations[currentLang].lastUpdate + window.siteConfig.general.lastUpdated;
+                }
+            }
+        };
+        document.body.appendChild(script);
+    }, 30000); // 30000 ميلي ثانية = 30 ثانية
 
     // --- إخفاء شاشة التحميل عند اكتمال تحميل الصفحة ---
     const loaderWrapper = document.getElementById('loader-wrapper');
@@ -1080,7 +1184,8 @@ document.addEventListener('DOMContentLoaded', () => {
             newsletterDesc: "احصل على آخر أخبار السياحة والمنح مباشرة في بريدك.",
             subscribeBtn: "اشتراك",
             visitLabel: "👀 عدد زياراتك: ",
-            whatsappBtn: "تواصل معنا عبر واتساب"
+            whatsappBtn: "تواصل معنا عبر واتساب",
+            lastUpdate: "🕒 آخر تحديث: "
         },
         en: {
             title: "Discover Wonderful Indonesia 🇮🇩",
@@ -1106,7 +1211,8 @@ document.addEventListener('DOMContentLoaded', () => {
             newsletterDesc: "Get the latest tourism and scholarship news directly to your inbox.",
             subscribeBtn: "Subscribe",
             visitLabel: "👀 Your Visits: ",
-            whatsappBtn: "Chat with us on WhatsApp"
+            whatsappBtn: "Chat with us on WhatsApp",
+            lastUpdate: "🕒 Last Updated: "
         },
         id: {
             title: "Jelajahi Pesona Indonesia 🇮🇩",
@@ -1132,7 +1238,8 @@ document.addEventListener('DOMContentLoaded', () => {
             newsletterDesc: "Dapatkan berita pariwisata dan beasiswa terbaru langsung di kotak masuk Anda.",
             subscribeBtn: "Langganan",
             visitLabel: "👀 Kunjungan Anda: ",
-            whatsappBtn: "Chat dengan kami di WhatsApp"
+            whatsappBtn: "Chat dengan kami di WhatsApp",
+            lastUpdate: "🕒 Terakhir Diperbarui: "
         }
     };
 
@@ -1189,5 +1296,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const whatsappFloat = document.getElementById('whatsappFloat');
         if (whatsappFloat) whatsappFloat.title = t.whatsappBtn;
+
+        if (document.getElementById('lastUpdateDisplay') && window.siteConfig && window.siteConfig.general.lastUpdated) {
+            document.getElementById('lastUpdateDisplay').textContent = t.lastUpdate + window.siteConfig.general.lastUpdated;
+        }
     });
 });
